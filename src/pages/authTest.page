@@ -1,0 +1,41 @@
+<apex:page controller="authTestController" id="pg">
+ <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
+ <script>
+ $(document).ready(function() {
+   
+   
+ });
+ </script>
+<apex:form id="frm">
+ <apex:pageblock id="pb">
+ <apex:selectList value="{!service}" size="1">
+     <apex:selectOptions value="{!services}"/>
+ </apex:selectList>
+ <apex:commandButton action="{!authorize}" value="Authorize" id="authButton"/>
+ <p/>
+ <apex:outputText rendered="{!!isnull(message)}" value="Problem: {!message}"/>
+ <apex:outputPanel id="pnlDetails" rendered="{!!isnull(token)}">
+  <div>Details URL : {!detailUrl}</div>
+  <apex:commandButton action="{!fetchDetails}" value="Get Details" id="detailButton"/>
+  <apex:inputTextarea id="details" value="{!body}" rows="30" cols="100"/>
+ </apex:outputPanel>
+ </apex:pageblock>
+ 
+</apex:form>
+
+<!--<apex:form >
+ <div>Service:{!service}</div>
+ <div>Request Token URL: {!url}</div>
+ <br/>
+ <div>Token:{!token}</div>
+ <div>Token Secret:{!tokenSecret}</div>
+ <br/>
+ <apex:commandButton action="{!fetchTokenDetails}" value="Authorize"/>
+ <apex:commandButton action="{!fetchData}" value="Fetch Data"/>
+ 
+ <apex:commandButton action="{!fetchTokenAndData}" value="Authorize & Fetch"/>
+ <br/>
+ <apex:inputTextarea value="{!result}" rows="30" cols="100"/>
+ 
+</apex:form>-->
+</apex:page>
