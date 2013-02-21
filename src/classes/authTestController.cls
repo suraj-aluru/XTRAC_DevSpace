@@ -1,261 +1,201 @@
 public with sharing class authTestController {
- public String service { get; set; }
- public String authUrl { get; set; }
- public boolean authSuccess { get; set; }
- public String message { get; set; }
- public String token { get; set; }
- public String verifier { get; set; }
- public String detailUrl {get;set;}
- public String body { get; set; }
- public List<SelectOption> services {
-  get {
-   if(services==null){
-    List<OAuthService__c> l = [SELECT name FROM OAuthService__c];
-    services = new List<SelectOption>();
-    for(OAuthService__c obj : l) {
-     services.add(new SelectOption(obj.name,obj.name));
-     System.debug('service: '+obj.name);
-    }
-   }
-   return services;
-  }
-  set;
- }
- 
- public authTestController(){
-   detailUrl = 'https://www.blogger.com/feeds/4064807799047825156/posts/default';
-   token = null;
-   if(ApexPages.currentPage().getParameters().get('oauth_token') !=null){
-    token = ApexPages.currentPage().getParameters().get('oauth_token');
-    verifier = ApexPages.currentPage().getParameters().get('oauth_verifier');
-    message = ApexPages.currentPage().getParameters().get('message');
-    if(message == 'null'){
-    	message = '';
-    }
-   }
- }
- 
- public PageReference authorize(){
-  OAuth oa = new OAuth();
-  authUrl = oa.newAuthorization(service);
-  System.debug('Suraj --> authUrl:' + authUrl);
-  if(authUrl==null) {
-   this.message = oa.message;
-   return null;
-  }
-  else {
-   return new PageReference('/apex/CompleteAuth?authUrl='+authUrl);
-  }
- }
- 
- public PageReference fetchDetails() {
-  Http h = new Http();
-  HttpRequest req = new HttpRequest();
-  req.setMethod('GET');
-  req.setEndpoint(detailUrl);
-	OAuth oa = new OAuth();
-	oa.setConsumerKey('anonymous');
-  oa.setConsumerSecret('anonymous');
-	oa.setToken('');
-	oa.setTokenSecret('');
-	oa.sign(req);
-	System.debug('Sending request...');
-  System.debug('Suraj --> req.getHeader():' + req.getHeader('Content-Type'));
-	HttpResponse res = h.send(req);
-	body = res.getBody();
-	System.debug('Received response ('+res.getStatusCode()+' '+res.getStatus()+')');
-	message = '';
-	return null;
- }
- 
- /*public PageReference completeAuthorization() {
-  String token = ApexPages.currentPage().getParameters().get('oauth_token');
-  if(token!=null)
-  {
-   String verifier = ApexPages.currentPage().getParameters().get('oauth_verifier');
-   OAuth oa = new OAuth();
-   authSuccess = oa.completeAuthorization(token,verifier);
-   this.message = oa.message;
-  }
-  else {
-   message = 'Invalid request. Missing parameter oauth_token';
-  }
-  return null;
- }*/
- 
- /*
-  public String url {get;set;}
-  public String result {get;set;}
-  public String service {get;set;}
-  public String callbackUrl {get; set; }
-  private Map<String,String> parameters = new Map<String,String>();
+	
+	public String responseBody { get; set; } 
+	
+	public map<Id,oAuth2Service__c> oAuth2Services {get;set;}
+	public List<SelectOption> services {get;set;}
+	public String selectedServiceId { get; set; }
+	
+	public List<SelectOption> savedURLS {get;set;}
+	public String selectedsavedURL { get; set; }
+	
+    public oAuth2Service__c selectedService{get;set;}
+    public oAuth2Token__c selectedServiceToken {get;set;} 
+    private Integer refreshRetries = 0;
   
-  private String request_token_url ='https://www.google.com/accounts/OAuthGetRequestToken?scope=https%3A%2F%2Fwww.blogger.com%2Ffeeds%2F4064807799047825156%2Fposts%2Fdefault';
-  private String access_token_url = 'https://www.google.com/accounts/OAuthGetAccessToken';
-  private String authorization_url = 'https://www.google.com/accounts/OAuthAuthorizeToken';
-  
-  private String consumer_key = 'anonymous';
-  private String consumer_secret = 'anonymous';
-  
-  private String nonce;
-  private String timestamp;
-  private String signature;
-  
-  public String token {get;set;}
-  public String tokenSecret {get;set;}
-  
-  public authTestController(){
-    url ='https://www.blogger.com/feeds/4064807799047825156/posts/default';
-    service = 'Google Blogger APIs';
-    callbackUrl = EncodingUtil.urlEncode('https://'+ApexPages.currentPage().getHeaders().get('Host')+  '/apex/authTest','UTF-8');
-  }
-  
-  public PageReference fetchTokenDetails() {
-    System.debug('Suraj --> fetchTokenDetails:');
-    
-    Http h = new Http();
-    HttpRequest req = new HttpRequest();
-    req.setMethod('GET');
-    req.setEndpoint(request_token_url);
-    
-    nonce = String.valueOf(Crypto.getRandomLong());
-    timestamp = String.valueOf(DateTime.now().getTime()/1000);
-
-    parameters.put('oauth_consumer_key',consumer_key);
-    
-    parameters.put('oauth_signature_method','HMAC-SHA1');
-    parameters.put('oauth_timestamp',timestamp);
-    parameters.put('oauth_nonce',nonce);
-    parameters.put('oauth_callback',callbackUrl);
-    
-    String s = createBaseString(parameters, req);
-    System.debug('Suraj --> s:' + s);
-    
-    Blob sig = Crypto.generateMac('HmacSHA1', Blob.valueOf(s),Blob.valueOf(consumer_secret+'&'+(tokenSecret!=null ? tokenSecret : '')));
-    System.debug('Suraj --> sig:' + sig);
-                              
-    signature = EncodingUtil.urlEncode(EncodingUtil.base64encode(sig), 'UTF-8');
-    System.debug('Suraj --> signature:' + signature);
-    
-    String header = 'OAuth ';
-    
-    for (String key : parameters.keySet()) {
-      header = header + key + '="'+parameters.get(key)+'", ';
-    }
-    
-    header = header + 'oauth_signature="'+signature+'"';
-    req.setHeader('Authorization',header);
-    
-    HttpResponse res = null;
-    res = h.send(req);
-    String resParams = res.getBody();
-    System.debug('Suraj --> resParams:' + resParams);
-    
-    Map<String,String> rp = getUrlParams(resParams);
-    
-    token = rp.get('oauth_token');
-    tokenSecret = rp.get('oauth_token_secret');
-    
-    System.debug('Suraj --> token:' +token );
-    System.debug('Suraj --> tokenSecret:' + tokenSecret );
-    result =resParams;
-    
-    return null;
-  }
-  
-   public PageReference fetchData() {
-    System.debug('Suraj --> fetchData:');
-    Http h = new Http();
-    HttpRequest req = new HttpRequest();
-    req.setMethod('POST');
-    req.setEndpoint(access_token_url);
-    req.setBody('');
-    nonce = String.valueOf(Crypto.getRandomLong());
-    timestamp = String.valueOf(DateTime.now().getTime()/1000);
-
-    parameters.put('oauth_consumer_key',consumer_key);
-    parameters.put('oauth_token',token);
-    parameters.put('oauth_signature_method','HMAC-SHA1');
-    parameters.put('oauth_timestamp',timestamp);
-    parameters.put('oauth_nonce',nonce);
-    parameters.put('oauth_callback',callbackUrl);
-    
-    String s = createBaseString(parameters, req);
-    System.debug('Suraj --> s:' + s);
-    
-    Blob sig = Crypto.generateMac('HmacSHA1', Blob.valueOf(s),Blob.valueOf(consumer_secret+'&'+(tokenSecret!=null ? tokenSecret : '')));
-    System.debug('Suraj --> sig:' + sig);
-                              
-    signature = EncodingUtil.urlEncode(EncodingUtil.base64encode(sig), 'UTF-8');
-    System.debug('Suraj --> signature:' + signature);
-    
-    String header = 'OAuth ';
-    
-    for (String key : parameters.keySet()) {
-      header = header + key + '="'+parameters.get(key)+'", ';
-    }
-    
-    header = header + 'oauth_signature="'+signature+'"';
-    req.setHeader('Authorization',header);
-    
-    HttpResponse res = null;
-    res = h.send(req);
-    String resParams = res.getBody();
-    System.debug('Suraj --> resParams:' + resParams);
-    result =resParams;
-    return null;
-   }
-   
-   public PageReference fetchTokenAndData(){
-     fetchTokenDetails();
-     fetchData();
-     return null;
-   }
-  
-  
-  private String createBaseString(Map<String,String> oauthParams, HttpRequest req) {
-    Map<String,String> p = oauthParams.clone();
-    if(req.getMethod().equalsIgnoreCase('post') && req.getBody()!=null &&
-       req.getHeader('Content-Type')=='application/x-www-form-urlencoded') {
-        p.putAll(getUrlParams(req.getBody()));
-    }
-    String host = req.getEndpoint();
-    Integer n = host.indexOf('?');
-    if(n>-1) {
-      p.putAll(getUrlParams(host.substring(n+1)));
-      host = host.substring(0,n);
-    }
-    List<String> keys = new List<String>();
-    keys.addAll(p.keySet());
-    keys.sort();
-    String s = keys.get(0)+'='+p.get(keys.get(0));
-    for(Integer i=1;i<keys.size();i++) {
-      s = s + '&' + keys.get(i)+'='+p.get(keys.get(i));
-    }
-
-    // According to OAuth spec, host string should be lowercased, but Google and LinkedIn
-    // both expect that case is preserved.
-    return req.getMethod().toUpperCase()+ '&' +
-      EncodingUtil.urlEncode(host, 'UTF-8') + '&' +
-      EncodingUtil.urlEncode(s, 'UTF-8');
-  }
-  
-  private Map<String,String> getUrlParams(String value) {
-
-    Map<String,String> res = new Map<String,String>();
-    if(value==null || value=='') {
-      return res;
-    }
-    for(String s : value.split('&')) {
-      System.debug('getUrlParams: '+s);
-      List<String> kv = s.split('=');
-      if(kv.size()>1) {
-        String encName = EncodingUtil.urlEncode(EncodingUtil.urlDecode(kv[0], 'UTF-8'), 'UTF-8').replace('+','%20');
-        String encValue = EncodingUtil.urlEncode(EncodingUtil.urlDecode(kv[1], 'UTF-8'), 'UTF-8').replace('+','%20');
-        System.debug('getUrlParams:  -> '+encName+','+encValue);
-        res.put(encName,encValue);
+	public authTestController(){
+		String serviceIdentifier = ApexPages.currentPage().getParameters().get('sIdentifier');
+		services = new List<SelectOption>();
+		savedURLS = new List<SelectOption>();
+		oAuth2Services = new map<Id,oAuth2Service__c>([SELECT Id,Name,Auth_URL__c,Token_URL__c,redirect_uri__c,client_secret__c,Client_Id__c,
+		                                                      Auth_Scope__c,Service_Identifier__c,
+		                                                      (Select Name, Saved_URL__c From oAuth2SaveURLs__r ),
+		                                                      (Select Name, Access_Token__c, Refresh_Token__c, Code__c From oAuth2Tokens__r Where User__c=:userInfo.getUserId() limit 1)  
+		                                               FROM oAuth2Service__c]);
+		if(oAuth2Services.size()>0){
+			selectedServiceId = oAuth2Services.values().get(0).Id;
+			selectedService = oAuth2Services.values().get(0);
+			for(oAuth2Service__c oA:oAuth2Services.values()){
+        services.add(new SelectOption(oA.Id,oA.Name));
+        if(serviceIdentifier != null && serviceIdentifier != '' && serviceIdentifier == oA.Service_Identifier__c){
+          selectedServiceId = oA.Id;
+          selectedService = oA;
+          if(selectedService.oAuth2Tokens__r != null && selectedService.oAuth2Tokens__r.size()>0){
+          	selectedServiceToken = selectedService.oAuth2Tokens__r[0];
+            responseBody = 'Code:'+selectedServiceToken.Code__c;
+          }
+          else{
+          	selectedServiceToken = null;
+          }
+        }
       }
+      
+      for(oAuth2SaveURL__c asu :selectedService.oAuth2SaveURLs__r){
+      	savedURLS.add(new SelectOption(asu.Saved_URL__c,asu.Saved_URL__c));
+      }
+		}
+	}
+	
+	public PageReference authorize(){
+    if((selectedServiceToken != null && (selectedServiceToken.Code__c == null || selectedServiceToken.Code__c == '' )) || selectedServiceToken == null){
+      string urlParams = '';
+      urlParams += ('redirect_uri=' + selectedService.redirect_uri__c);
+      urlParams += ('&client_id='+selectedService.Client_Id__c);
+      urlParams += ('&scope='+System.Encodingutil.urlEncode(selectedService.Auth_Scope__c, 'UTF-8'));
+      urlParams += ('&approval_prompt=force');
+      urlParams += ('&response_type=code');
+      urlParams += ('&access_type=offline');
+      return new PageReference(selectedService.Auth_URL__c + '?' + urlParams);
     }
-    return res;
-  }*/
+   else{
+    return null;
+   }
+ }
+ 
+ public PageReference fetchToken(){
+ 	String accessToken;
+ 	String refreshToken;
+ 	if((selectedServiceToken != null && (selectedServiceToken.Code__c == null || selectedServiceToken.Code__c == '' )) || selectedServiceToken == null ){
+ 		authorize();
+ 	}
+ 	
+  HttpRequest req = new HttpRequest();
+  HttpResponse res = new HttpResponse();
+  Http http = new Http();
+  req.setEndpoint(selectedService.Token_URL__c);
+  req.setMethod('POST');
+    
+  string postData = 'code='+selectedServiceToken.Code__c;
+  postData += ('&client_id='+selectedService.Client_Id__c);
+  postData += ('&client_secret='+selectedService.client_secret__c);
+  postData += ('&redirect_uri='+ selectedService.redirect_uri__c);
+  postData += ('&grant_type=authorization_code');
+  postData += ('&scope=');
+  //postData += ('&scope='+System.Encodingutil.urlEncode(selectedService.Auth_Scope__c, 'UTF-8'));
+  
+  req.setBody(postData); 
+  req.setHeader('Content-Type', 'application/x-www-form-urlencoded');  
+  
+  try {
+    res = http.send(req);
+    responseBody = 'endpoint:'+ req.getEndpoint() + '\n'; 
+    responseBody += res.getBody();
+        
+    String regEx = '\"access_token\" : \"(.*?)\"';
+    Pattern p = Pattern.compile(regEx);
+    Matcher m = p.matcher(responseBody);
+    if(m.find()){
+      accessToken = m.group(1);
+      System.debug('Suraj -->'+accessToken);
+    }
+        
+    regEx = '\"refresh_token\" : \"(.*?)\"';
+    p = Pattern.compile(regEx);
+    m = p.matcher(responseBody);
+    if(m.find()){
+      refreshToken = m.group(1);
+      System.debug('Suraj -->'+refreshToken);
+    }
+    
+    if(accessToken != null && refreshToken != null){
+    	selectedServiceToken.Access_Token__c = accessToken;
+    	selectedServiceToken.Refresh_Token__c = refreshToken;
+    	update selectedServiceToken;
+    	refreshRetries = 0;
+    }
+	} 
+	catch(System.CalloutException e) {
+	 System.debug('Callout error: '+ e);
+	 responseBody = 'Callout error: '+ e + '\n';
+	 responseBody += res.toString();     
+	}
+  return null;
+ }
+	
+ public PageReference refreshToken(){
+ 	String accessToken;
+ 	HttpRequest req = new HttpRequest();
+  HttpResponse res = new HttpResponse();
+  Http http = new Http();
+  req.setEndpoint(selectedService.Token_URL__c);
+  req.setMethod('POST');
+  
+  string postData = 'refresh_token='+selectedServiceToken.Refresh_Token__c;
+  postData += ('&client_id='+selectedService.Client_Id__c);
+  postData += ('&client_secret='+selectedService.client_secret__c);
+  postData += ('&grant_type=refresh_token');
+  
+  req.setBody(postData); 
+  req.setHeader('Content-Type', 'application/x-www-form-urlencoded');  
+  
+  try {
+    res = http.send(req);
+    responseBody = 'endpoint:'+ req.getEndpoint() + '\n'; 
+    responseBody += res.getBody();
+        
+    String regEx = '\"access_token\" : \"(.*?)\"';
+    Pattern p = Pattern.compile(regEx);
+    Matcher m = p.matcher(responseBody);
+    if(m.find()){
+      accessToken = m.group(1);
+      System.debug('Suraj -->'+accessToken);
+    }
+
+    if(accessToken != null){
+    	selectedServiceToken.Access_Token__c = accessToken;
+      update selectedServiceToken;
+    }
+	} 
+	catch(System.CalloutException e) {
+	 System.debug('Callout error: '+ e);
+	 responseBody = 'Callout error: '+ e + '\n';
+	 responseBody += res.toString();     
+	}
+ 	return null;
+ }	
+ 
+ public PageReference fetchDetails(){
+  
+  string errorCode = '';
+  HttpRequest req = new HttpRequest();
+  HttpResponse res = new HttpResponse();
+  Http http = new Http();
+  string getData = 'access_token='+selectedServiceToken.Access_Token__c;
+  //req.setEndpoint('https://www.googleapis.com/calendar/v3/users/me/settings?'+getData);
+  req.setEndpoint(selectedsavedURL +'?'+getData);
+  req.setMethod('GET'); 
+  req.setHeader('Content-Type', 'application/json;charset=UTF-8');
+  try {
+     res = http.send(req);
+     System.debug('Suraj --> refreshRetries: '+ refreshRetries);
+     System.debug('Suraj --> Callout error: '+ res.getStatusCode());
+     
+     if(res.getStatusCode()== 401){
+	 	  refreshToken();
+	    if(refreshRetries < 3){
+	     fetchDetails();
+	    }
+	    refreshRetries +=1;
+     }
+     responseBody = 'endpoint:'+ req.getEndpoint() + '\n'; 
+     responseBody += 'refreshRetries:' +refreshRetries + '\n';
+     responseBody += res.getBody();
+	} 
+	catch(System.CalloutException e) {
+	 System.debug('Callout error: '+ e);
+	 responseBody = 'Callout error: '+ e + '\n';
+	 responseBody += res.toString();     
+	}
+  return null;
+ } 
 }

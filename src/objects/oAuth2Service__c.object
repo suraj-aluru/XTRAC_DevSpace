@@ -39,65 +39,76 @@
     <enableHistory>false</enableHistory>
     <enableReports>false</enableReports>
     <fields>
-        <fullName>OAuth_Service__c</fullName>
+        <fullName>Auth_Scope__c</fullName>
         <externalId>false</externalId>
-        <label>OAuth Service</label>
-        <referenceTo>OAuthService__c</referenceTo>
-        <relationshipLabel>Tokens</relationshipLabel>
-        <relationshipName>Tokens</relationshipName>
-        <relationshipOrder>0</relationshipOrder>
-        <reparentableMasterDetail>false</reparentableMasterDetail>
-        <type>MasterDetail</type>
-        <writeRequiresMasterRead>false</writeRequiresMasterRead>
-    </fields>
-    <fields>
-        <fullName>Owner__c</fullName>
-        <deleteConstraint>SetNull</deleteConstraint>
-        <externalId>false</externalId>
-        <label>Owner</label>
-        <referenceTo>User</referenceTo>
-        <relationshipName>OAuth_Tokens</relationshipName>
-        <required>false</required>
-        <type>Lookup</type>
-    </fields>
-    <fields>
-        <fullName>isAccess__c</fullName>
-        <defaultValue>false</defaultValue>
-        <description>If true, this is an access token. If false, it&apos;s a request token</description>
-        <externalId>false</externalId>
-        <inlineHelpText>If true, this is an access token. If false, it&apos;s a request token</inlineHelpText>
-        <label>isAccess</label>
-        <type>Checkbox</type>
-    </fields>
-    <fields>
-        <fullName>secret__c</fullName>
-        <externalId>false</externalId>
-        <label>secret</label>
+        <label>Auth Scope</label>
         <length>255</length>
         <required>false</required>
         <type>Text</type>
         <unique>false</unique>
     </fields>
     <fields>
-        <fullName>token__c</fullName>
+        <fullName>Auth_URL__c</fullName>
+        <description>Auth URL</description>
         <externalId>false</externalId>
-        <label>token</label>
+        <label>Auth URL</label>
         <length>255</length>
         <required>false</required>
         <type>Text</type>
         <unique>false</unique>
     </fields>
-    <label>OAuth Token</label>
-    <listViews>
-        <fullName>All</fullName>
-        <filterScope>Everything</filterScope>
-        <label>All</label>
-    </listViews>
+    <fields>
+        <fullName>Client_Id__c</fullName>
+        <externalId>false</externalId>
+        <label>Client Id</label>
+        <length>255</length>
+        <required>false</required>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Service_Identifier__c</fullName>
+        <caseSensitive>true</caseSensitive>
+        <externalId>false</externalId>
+        <label>Service Identifier</label>
+        <length>255</length>
+        <required>true</required>
+        <type>Text</type>
+        <unique>true</unique>
+    </fields>
+    <fields>
+        <fullName>Token_URL__c</fullName>
+        <externalId>false</externalId>
+        <label>Token URL</label>
+        <length>255</length>
+        <required>false</required>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>client_secret__c</fullName>
+        <externalId>false</externalId>
+        <label>client_secret</label>
+        <length>255</length>
+        <required>false</required>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>redirect_uri__c</fullName>
+        <externalId>false</externalId>
+        <label>redirect_uri</label>
+        <length>255</length>
+        <required>false</required>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <label>oAuth2Service</label>
     <nameField>
-        <label>OAuth Token Name</label>
+        <label>oAuth2Service Name</label>
         <type>Text</type>
     </nameField>
-    <pluralLabel>OAuth Tokens</pluralLabel>
+    <pluralLabel>oAuth2Services</pluralLabel>
     <searchLayouts/>
-    <sharingModel>ControlledByParent</sharingModel>
+    <sharingModel>ReadWrite</sharingModel>
 </CustomObject>

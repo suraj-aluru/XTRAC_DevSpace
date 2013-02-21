@@ -6,24 +6,30 @@
     </types>
     <types>
         <members>*</members>
+        <name>ApexComponent</name>
+    </types>
+    <types>
+        <members>*</members>
         <name>ApexPage</name>
     </types>
     <types>
         <members>*</members>
+        <name>ApexTrigger</name>
+    </types>
+    <types>
+        <members>*</members>
+        <members>oAuth2SaveURL__c</members>
+        <members>oAuth2Service__c</members>
+        <members>oAuth2Token__c</members>
         <name>CustomObject</name>
     </types>
     <types>
         <members>*</members>
-        <name>CustomTab</name>
+        <name>RemoteSiteSetting</name>
     </types>
     <types>
-        <members>OAuthService__c-OAuth Service Layout</members>
-        <members>OAuth_Token__c-OAuth Token Layout</members>
-        <name>Layout</name>
-    </types>
-    <types>
-        <members>Admin</members>
-        <name>Profile</name>
+        <members>*</members>
+        <name>StaticResource</name>
     </types>
     <version>26.0</version>
 </Package>
