@@ -1,2 +1,0 @@
-<apex:page controller="OAuth" id="pg" action="{!completeAuthorization}">
-</apex:page>

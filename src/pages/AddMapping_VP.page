@@ -1,0 +1,54 @@
+<apex:page controller="AddMapping_AC">
+ <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
+ <apex:form >
+  <apex:actionfunction action="{!fillFields}" name="fillFields" rerender="pnlFields"/>
+  <apex:pageblock >
+   <table cellpadding="0" cellspacing="0" style="width:100%">
+    <tr>
+     <td>
+      <apex:outputPanel layout="block" id="pnlObjs">
+       <apex:selectlist value="{!selectedObj}" multiselect="false" size="1" onchange="fillFields();" id="SelectedObj"> 
+        <apex:selectoptions value="{!objs}"/>
+       </apex:selectlist>
+      </apex:outputPanel>
+      <apex:outputPanel layout="block" id="pnlFields">
+       <apex:selectlist value="{!selectedFld}" multiselect="false" size="1" id="SelectedFld">
+        <apex:selectoptions value="{!flds}"/>
+       </apex:selectlist>
+      </apex:outputPanel>
+     </td>
+     <td>
+      <apex:outputPanel layout="block" id="pnlXtracFields">
+       <apex:selectlist value="{!selectedXtracFld}" multiselect="false" size="1" id="SelectedXtracFld">
+        <apex:selectoptions value="{!XtracFlds}"/>
+       </apex:selectlist>
+      </apex:outputPanel>
+     </td> 
+   </tr>
+   </table>
+   <apex:outputpanel layout="block">
+     <apex:commandButton value="Save" onclick="if(!isValid())return false;" action="{!saveMapping}"/>
+    </apex:outputpanel>
+  </apex:pageblock>
+  <script>
+   function isValid(){
+    if($('select[id$="SelectedObj"]').val()==''){
+     alert('Please Select Object');
+     return false;
+    } 
+    
+    if($('select[id$="SelectedFld"]').val()==''){
+     alert('Please Select Field');
+     return false;
+    } 
+    
+    if($('select[id$="SelectedXtracFld"]').val()==''){
+     alert('Please Select Xtrac Field');
+     return false;
+    } 
+    
+    return true;
+   }
+  </script>
+ </apex:form>
+</apex:page>

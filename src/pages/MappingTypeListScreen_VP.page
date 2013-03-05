@@ -1,0 +1,32 @@
+<apex:page controller="MappingTypeListScreen_AC"> 
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
+ <apex:form >
+  <apex:pageblock >
+    <apex:pageblocktable value="{!lstMapping}" var="m">
+     <apex:column headerValue="Object Name">
+      {!m.SF_Object_Name__c}
+     </apex:column>
+     <apex:column headerValue="Field Name">
+      {!m.SF_Field_Name__c}
+     </apex:column>
+     <apex:column headerValue="Xtrac Field Name">
+      {!m.XTRAC_Field__c}
+     </apex:column>
+     <apex:column headerValue="Added By">
+      {!m.Added_By__c}
+     </apex:column>
+     <apex:column headerValue="Date Added">
+      {!m.Date_Added__c}
+     </apex:column>     
+     <apex:column headerValue="Action">
+      <apex:commandLink action="{!delMapping}" value="Delete">
+       <apex:param assignto="{!selectedMappingId}" name="selectedMappingId" value="{!m.Id}"/>
+      </apex:commandLink>
+     </apex:column>     
+    </apex:pageblocktable>
+    <apex:outputpanel layout="block" style="text-align:center;">
+     <apex:commandButton value="New Mapping" onclick="window.location.href = '/apex/AddMapping_VP?mappingtype={!mappingType}'; return false;"/>
+    </apex:outputpanel>
+  </apex:pageblock> 
+ </apex:form>
+</apex:page>

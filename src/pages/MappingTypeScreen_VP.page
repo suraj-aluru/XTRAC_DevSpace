@@ -1,0 +1,9 @@
+<apex:page controller="MappingTypeScreen_AC">
+ <apex:pageBlock >
+   <apex:repeat value="{!lstMappingTypes}" var="mt">
+    <div>
+      <a href="/apex/mappingtypelistscreen_vp?mappingtype={!mt.Name}">{!mt.Name}</a>
+    </div>
+   </apex:repeat>
+ </apex:pageBlock>
+</apex:page>

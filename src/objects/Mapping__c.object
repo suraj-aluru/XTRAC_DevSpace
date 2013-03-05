@@ -39,76 +39,74 @@
     <enableHistory>false</enableHistory>
     <enableReports>false</enableReports>
     <fields>
-        <fullName>Auth_Scope__c</fullName>
+        <fullName>Added_By__c</fullName>
         <externalId>false</externalId>
-        <label>Auth Scope</label>
+        <label>Added By</label>
         <length>255</length>
         <required>false</required>
         <type>Text</type>
         <unique>false</unique>
     </fields>
     <fields>
-        <fullName>Auth_URL__c</fullName>
-        <description>Auth URL</description>
+        <fullName>Date_Added__c</fullName>
         <externalId>false</externalId>
-        <label>Auth URL</label>
+        <label>Date Added</label>
+        <required>false</required>
+        <type>Date</type>
+    </fields>
+    <fields>
+        <fullName>Mapping_Types__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <externalId>false</externalId>
+        <label>Mapping Types</label>
+        <referenceTo>Mapping_Types__c</referenceTo>
+        <relationshipLabel>Mappings</relationshipLabel>
+        <relationshipName>Mappings</relationshipName>
+        <required>false</required>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>SF_API_Name__c</fullName>
+        <externalId>false</externalId>
+        <label>SF API Name</label>
         <length>255</length>
         <required>false</required>
         <type>Text</type>
         <unique>false</unique>
     </fields>
     <fields>
-        <fullName>Client_Id__c</fullName>
+        <fullName>SF_Field_Name__c</fullName>
         <externalId>false</externalId>
-        <label>Client Id</label>
+        <label>SF Field Name</label>
         <length>255</length>
         <required>false</required>
         <type>Text</type>
         <unique>false</unique>
     </fields>
     <fields>
-        <fullName>Service_Identifier__c</fullName>
-        <caseSensitive>true</caseSensitive>
+        <fullName>SF_Object_Name__c</fullName>
         <externalId>false</externalId>
-        <label>Service Identifier</label>
-        <length>255</length>
-        <required>true</required>
-        <type>Text</type>
-        <unique>true</unique>
-    </fields>
-    <fields>
-        <fullName>Token_URL__c</fullName>
-        <externalId>false</externalId>
-        <label>Token URL</label>
+        <label>SF Object Name</label>
         <length>255</length>
         <required>false</required>
         <type>Text</type>
         <unique>false</unique>
     </fields>
     <fields>
-        <fullName>client_secret__c</fullName>
+        <fullName>XTRAC_Field__c</fullName>
         <externalId>false</externalId>
-        <label>client_secret</label>
+        <label>XTRAC Field</label>
         <length>255</length>
         <required>false</required>
         <type>Text</type>
         <unique>false</unique>
     </fields>
-    <fields>
-        <fullName>redirect_uri__c</fullName>
-        <externalId>false</externalId>
-        <label>redirect_uri</label>
-        <length>255</length>
-        <required>false</required>
-        <type>Text</type>
-        <unique>false</unique>
-    </fields>
-    <label>oAuth2Service</label>
+    <label>Mapping</label>
     <nameField>
-        <label>oAuth2Service Name</label>
+        <label>Mapping Name</label>
         <type>Text</type>
     </nameField>
-    <pluralLabel>oAuth2Services</pluralLabel>
+    <pluralLabel>Mappings</pluralLabel>
     <searchLayouts/>
     <sharingModel>ReadWrite</sharingModel>
 </CustomObject>

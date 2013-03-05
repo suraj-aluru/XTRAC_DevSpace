@@ -38,33 +38,12 @@
     <enableFeeds>false</enableFeeds>
     <enableHistory>false</enableHistory>
     <enableReports>false</enableReports>
-    <fields>
-        <fullName>Saved_URL__c</fullName>
-        <externalId>false</externalId>
-        <label>Saved URL</label>
-        <length>255</length>
-        <required>false</required>
-        <type>Text</type>
-        <unique>false</unique>
-    </fields>
-    <fields>
-        <fullName>oAuth2Service__c</fullName>
-        <externalId>false</externalId>
-        <label>oAuth2Service</label>
-        <referenceTo>oAuth2Service__c</referenceTo>
-        <relationshipLabel>oAuth2SaveURLs</relationshipLabel>
-        <relationshipName>oAuth2SaveURLs</relationshipName>
-        <relationshipOrder>0</relationshipOrder>
-        <reparentableMasterDetail>false</reparentableMasterDetail>
-        <type>MasterDetail</type>
-        <writeRequiresMasterRead>false</writeRequiresMasterRead>
-    </fields>
-    <label>oAuth2SaveURL</label>
+    <label>Mapping Types</label>
     <nameField>
-        <label>oAuth2SaveURL Name</label>
+        <label>Mapping Types Name</label>
         <type>Text</type>
     </nameField>
-    <pluralLabel>oAuth2SaveURLs</pluralLabel>
+    <pluralLabel>Mapping Types</pluralLabel>
     <searchLayouts/>
-    <sharingModel>ControlledByParent</sharingModel>
+    <sharingModel>ReadWrite</sharingModel>
 </CustomObject>
